@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en" data-font="serif">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light" />
+    <meta name="theme-color" content="#EAE5D8" />
+    <title>Pomodoro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=IBM+Plex+Sans:wght@400;500;600&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <canvas id="stage" aria-hidden="true"></canvas>
+    <img id="artwork-reveal" alt="" decoding="async" />
+
+    <div class="chrome" id="chrome">
+      <aside class="panel panel-tasks glass" id="panel-tasks">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-kicker">Studio</p>
+            <h2 class="panel-title">Task manager</h2>
+          </div>
+          <button type="button" class="task-clear" id="task-clear" hidden>
+            Clear all
+          </button>
+        </div>
+        <form class="task-form" id="task-form">
+          <input
+            id="task-input"
+            type="text"
+            maxlength="120"
+            autocomplete="off"
+            placeholder="Add a task and press Enter"
+          />
+        </form>
+        <ul class="task-list" id="task-list"></ul>
+      </aside>
+
+      <aside class="panel panel-calendar glass" id="panel-calendar">
+        <p class="panel-kicker">Atelier</p>
+        <div class="cal-head">
+          <button type="button" class="cal-nav" id="cal-prev" aria-label="Previous month">
+            ‹
+          </button>
+          <h2 class="panel-title" id="cal-title">Calendar</h2>
+          <button type="button" class="cal-nav" id="cal-next" aria-label="Next month">
+            ›
+          </button>
+        </div>
+        <div class="cal-weekdays">
+          <span>Su</span><span>Mo</span><span>Tu</span><span>We</span>
+          <span>Th</span><span>Fr</span><span>Sa</span>
+        </div>
+        <div class="cal-grid" id="cal-grid"></div>
+        <div class="cal-note" id="cal-note" hidden>
+          <label class="goal-label" for="focus-goal" id="cal-note-label">
+            Daily focus goal
+          </label>
+          <textarea
+            id="focus-goal"
+            rows="4"
+            maxlength="280"
+            placeholder="Add a focus goal or event for this day"
+          ></textarea>
+        </div>
+      </aside>
+
+      <aside class="panel panel-spotify glass" id="panel-spotify">
+        <p class="panel-kicker">Listening room</p>
+        <h2 class="panel-title">Cultural Canvas</h2>
+
+        <div class="spotify-fallback" id="spotify-fallback">
+          <div class="spotify-card">
+            <span class="spotify-mark" aria-hidden="true"></span>
+            <p class="panel-copy">
+              Sync your Spotify account to make this studio a Connect device,
+              or open Spotify in another window while you work.
+            </p>
+            <p class="spotify-note" id="spotify-note" hidden></p>
+            <div class="spotify-actions">
+              <button type="button" class="spotify-btn" id="spotify-connect">
+                Sync Spotify Account
+              </button>
+              <a
+                class="spotify-link"
+                href="https://open.spotify.com"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Open Spotify
+              </a>
+            </div>
+            <p class="spotify-hint">
+              Dashboard redirect URI must match this page, e.g. http://127.0.0.1:8000/
+            </p>
+          </div>
+        </div>
+
+        <div class="spotify-player" id="spotify-player" hidden>
+          <div class="spotify-now">
+            <div class="spotify-art" id="spotify-art" aria-hidden="true"></div>
+            <div class="spotify-meta">
+              <p class="spotify-track" id="spotify-track">Ready for playback</p>
+              <p class="spotify-artist" id="spotify-artist">
+                Transfer Spotify to Cultural Canvas Player
+              </p>
+            </div>
+          </div>
+          <div class="spotify-controls">
+            <button type="button" class="spotify-ctrl" id="spotify-prev" aria-label="Previous">
+              ‹‹
+            </button>
+            <button type="button" class="spotify-ctrl is-primary" id="spotify-toggle" aria-label="Play">
+              ▶
+            </button>
+            <button type="button" class="spotify-ctrl" id="spotify-next" aria-label="Next">
+              ››
+            </button>
+          </div>
+          <p class="spotify-device" id="spotify-device">Connecting device…</p>
+          <button type="button" class="spotify-link" id="spotify-disconnect">
+            Disconnect
+          </button>
+        </div>
+      </aside>
+
+      <aside class="panel panel-settings glass" id="panel-settings">
+        <p class="panel-kicker">Preferences</p>
+        <h2 class="panel-title">Settings</h2>
+        <label class="setting-label" for="focus-range">
+          Focus length
+          <span id="focus-readout">25 min</span>
+        </label>
+        <input
+          id="focus-range"
+          type="range"
+          min="10"
+          max="60"
+          step="1"
+          value="25"
+        />
+        <label class="setting-label" for="break-range">
+          Short break
+          <span id="break-readout">5 min</span>
+        </label>
+        <input
+          id="break-range"
+          type="range"
+          min="2"
+          max="15"
+          step="1"
+          value="5"
+        />
+        <p class="setting-label">Typography</p>
+        <div class="font-toggle" role="group" aria-label="Font style">
+          <button type="button" id="font-serif" class="font-option is-on">
+            Historic Serif
+          </button>
+          <button type="button" id="font-mono" class="font-option">
+            Architectural Mono
+          </button>
+        </div>
+        <button type="button" class="session-reset" id="session-reset">
+          Reset session
+        </button>
+      </aside>
+
+      <nav class="dock glass" id="dock" aria-label="Studio">
+        <button type="button" class="dock-btn" data-panel="tasks" aria-label="Task manager">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="4" y="4" width="16" height="16" rx="2" />
+            <path d="M8 12h8M8 8h8M8 16h5" />
+          </svg>
+        </button>
+        <button type="button" class="dock-btn" data-panel="calendar" aria-label="Calendar">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="4" y="5" width="16" height="15" rx="2" />
+            <path d="M4 10h16M8 3v4M16 3v4" />
+          </svg>
+        </button>
+        <button type="button" class="dock-btn" data-panel="spotify" aria-label="Spotify">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="9" />
+            <path d="M8 10c2.4-1 5.6-1 8 .4M8.2 13c1.8-.8 4.4-.8 6.6.3M8.5 16c1.4-.6 3.4-.6 5 .2" />
+          </svg>
+        </button>
+        <button type="button" class="dock-btn" data-panel="settings" aria-label="Settings">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="3" />
+            <path
+              d="M12 3.5v2.2M12 18.3v2.2M4.8 7.2l1.9 1.1M17.3 15.7l1.9 1.1M4.8 16.8l1.9-1.1M17.3 8.3l1.9-1.1"
+            />
+          </svg>
+        </button>
+      </nav>
+
+      <div class="reveal-ui" id="reveal-ui">
+        <aside class="plaque" id="plaque" aria-hidden="true">
+          <button type="button" class="plaque-close" id="plaque-close" aria-label="Dismiss label">
+            ×
+          </button>
+          <p class="plaque-kicker">Collection</p>
+          <h2 class="plaque-title" id="plaque-title"></h2>
+          <p class="plaque-culture" id="plaque-culture"></p>
+          <p class="plaque-era" id="plaque-era"></p>
+          <p class="plaque-origin" id="plaque-origin"></p>
+          <p class="plaque-copy" id="plaque-copy"></p>
+        </aside>
+        <button
+          type="button"
+          class="info-btn glass"
+          id="info-btn"
+          aria-label="Artwork information"
+          aria-hidden="true"
+          tabindex="-1"
+        >
+          <span class="info-btn-mark" aria-hidden="true">i</span>
+        </button>
+      </div>
+    </div>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
